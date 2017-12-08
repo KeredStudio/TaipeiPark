@@ -91,9 +91,6 @@ public class MainActivityFragment extends Fragment implements DownloadCallback {
         new DownloadAsyncTask(SourceUrl.TAIPEI_PARK_URL, this).execute();
     }
 
-    private void initViews() {
-
-    }
 
     @Override
     public void showProgressing() {

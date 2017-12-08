@@ -13,6 +13,8 @@ import java.net.URLConnection;
 
 /**
  * Created by derek_chang on 2017/12/7.
+ *
+ * Download url file
  */
 
 public class DownloadAsyncTask extends AsyncTask<String, String, String> {
