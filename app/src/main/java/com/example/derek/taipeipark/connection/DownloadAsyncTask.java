@@ -3,8 +3,7 @@ package com.example.derek.taipeipark.connection;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import com.example.derek.taipeipark.data.ParkResult;
-import com.google.gson.Gson;
+import com.example.derek.taipeipark.callback.DownloadCallback;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -19,13 +18,21 @@ import java.net.URLConnection;
 public class DownloadAsyncTask extends AsyncTask<String, String, String> {
     public static final String TAG = DownloadAsyncTask.class.getSimpleName();
     private String mUrl;
-
-    public DownloadAsyncTask(String url) {
+    private DownloadCallback mDownloadCallback;
+    public DownloadAsyncTask(String url, DownloadCallback callback) {
         mUrl = url;
+        mDownloadCallback = callback;
+    }
+
+    @Override
+    protected void onPreExecute() {
+        super.onPreExecute();
+        mDownloadCallback.showProgressing();
     }
 
     @Override
     protected String doInBackground(String... strings) {
+        String result = "";
         URLConnection urlConnection;
         BufferedReader bufferedReader = null;
         try {
@@ -37,12 +44,8 @@ public class DownloadAsyncTask extends AsyncTask<String, String, String> {
             while ((line = bufferedReader.readLine()) != null) {
                 stringBuffer.append(line);
             }
-
-            String result = stringBuffer.toString();
-
-            ParkResult parkResult = new Gson().fromJson(result, ParkResult.class);
-
-            return stringBuffer.toString();
+            result = stringBuffer.toString();
+            return result;
         } catch (Exception e) {
             Log.e(TAG, e.getMessage());
         } finally {
@@ -54,12 +57,16 @@ public class DownloadAsyncTask extends AsyncTask<String, String, String> {
                 }
             }
         }
-        return "";
+
+        return result;
     }
 
     @Override
     protected void onPostExecute(String s) {
-        Log.d(TAG, s);
         super.onPostExecute(s);
+        mDownloadCallback.onResult(s);
+        mDownloadCallback.hideProgressing();
     }
+
+
 }
